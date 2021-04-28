@@ -34,10 +34,8 @@ public class PetTypeServiceImpl implements PetTypeService{
     @Override
     public PetTypeDto findById(int id) throws DataNotFoundException {
         if(id < 1) throw new IllegalArgumentException("The id is not valid");
-
         return modelMapper.map(petTypeRepository.findById(id)
                 .orElseThrow(()-> new DataNotFoundException("PetTypeDto not found")),PetTypeDto.class);
-
     }
 
     @Override
@@ -54,18 +52,22 @@ public class PetTypeServiceImpl implements PetTypeService{
         if(dto == null) throw new IllegalArgumentException("PetTypeDto not found ");
         if(dto.getId() < 1) throw new IllegalArgumentException("The id is not valid");
 
-        Optional<PetType> petTypeDtoOptional = petTypeRepository.findById(modelMapper.map(dto,PetType.class).getId());
-
-        if(petTypeDtoOptional.isPresent())
-        return modelMapper.map(petTypeRepository.save(modelMapper.map(dto, PetType.class)),PetTypeDto.class);
-        else throw new DataNotFoundException("PetTypeDto not found.");
+        return modelMapper
+                .map(petTypeRepository
+                        .save(modelMapper.map(
+                                petTypeRepository.findById(modelMapper.map(dto.getId(),PetType.class).getId())
+                                .orElseThrow(()-> new DataNotFoundException("Id not found."))
+                                ,PetType.class)
+                        ),PetTypeDto.class
+                );
     }
 
     @Override
     public void delete(int id) {
     if (id < 1) throw new IllegalArgumentException("The id is not valid");
         try {
-            petTypeRepository.delete(modelMapper.map(petTypeRepository.findById(id).orElseThrow(()->new DataNotFoundException("Id not found.")), PetType.class));
+            petTypeRepository.delete(modelMapper.map(petTypeRepository.findById(id)
+                    .orElseThrow(()->new DataNotFoundException("Id not found.")), PetType.class));
         } catch (DataNotFoundException e) {
             e.printStackTrace();
         }

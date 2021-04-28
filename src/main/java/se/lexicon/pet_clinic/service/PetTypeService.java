@@ -9,7 +9,7 @@ public interface PetTypeService {
 
     PetTypeDto save(PetTypeDto dto);
     PetTypeDto update(PetTypeDto dto) throws DataNotFoundException;
-    void delete(int id);
+    void delete(int id) throws DataNotFoundException;
     List<PetTypeDto> findAll();
     PetTypeDto findById(int id) throws DataNotFoundException;
 }
